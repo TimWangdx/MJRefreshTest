@@ -11,12 +11,17 @@
 
 @interface MJRefreshNormalHeader()
 {
+    // 箭头的图片
     __unsafe_unretained UIImageView *_arrowView;
 }
+
+// 菊花
 @property (weak, nonatomic) UIActivityIndicatorView *loadingView;
+
 @end
 
 @implementation MJRefreshNormalHeader
+
 #pragma mark - 懒加载子控件
 - (UIImageView *)arrowView
 {
@@ -60,16 +65,23 @@
     
     // 箭头的中心点
     CGFloat arrowCenterX = self.mj_w * 0.5;
+    // 有状态的label时候
     if (!self.stateLabel.hidden) {
+        // 获取文字的宽度
         CGFloat stateWidth = self.stateLabel.mj_textWith;
         CGFloat timeWidth = 0.0;
+        // 有时间拉不了的时候
         if (!self.lastUpdatedTimeLabel.hidden) {
+            // 获取显示的时间的宽度
             timeWidth = self.lastUpdatedTimeLabel.mj_textWith;
         }
+        // 获取两个最大的宽度
         CGFloat textWidth = MAX(stateWidth, timeWidth);
+        
         arrowCenterX -= textWidth / 2 + self.labelLeftInset;
     }
     CGFloat arrowCenterY = self.mj_h * 0.5;
+    // 箭头的中心位置
     CGPoint arrowCenter = CGPointMake(arrowCenterX, arrowCenterY);
     
     // 箭头
@@ -83,7 +95,10 @@
         self.loadingView.center = arrowCenter;
     }
     
+    // 不设置箭头颜色是蓝色的。。。
     self.arrowView.tintColor = self.stateLabel.textColor;
+//    self.arrowView.tintColor = [UIColor redColor];
+//    self.arrowView.image = [self.arrowView.image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
 }
 
 - (void)setState:(MJRefreshState)state
@@ -124,4 +139,5 @@
         self.arrowView.hidden = YES;
     }
 }
+
 @end

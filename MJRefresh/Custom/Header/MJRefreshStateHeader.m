@@ -29,6 +29,7 @@
     return _stateTitles;
 }
 
+// 添加状态label
 - (UILabel *)stateLabel
 {
     if (!_stateLabel) {
@@ -37,6 +38,7 @@
     return _stateLabel;
 }
 
+// 添加时间label
 - (UILabel *)lastUpdatedTimeLabel
 {
     if (!_lastUpdatedTimeLabel) {
@@ -114,10 +116,10 @@
 {
     [super prepare];
     
-    // 初始化间距
+    // 初始化间距，文字距离圈圈、箭头的距离
     self.labelLeftInset = MJRefreshLabelLeftInset;
     
-    // 初始化文字
+    // 初始化文字，设置不同状态下的文字
     [self setTitle:[NSBundle mj_localizedStringForKey:MJRefreshHeaderIdleText] forState:MJRefreshStateIdle];
     [self setTitle:[NSBundle mj_localizedStringForKey:MJRefreshHeaderPullingText] forState:MJRefreshStatePulling];
     [self setTitle:[NSBundle mj_localizedStringForKey:MJRefreshHeaderRefreshingText] forState:MJRefreshStateRefreshing];
@@ -133,11 +135,13 @@
     
     if (self.lastUpdatedTimeLabel.hidden) {
         // 状态
+        // 隐藏时间的label，则状态label沾满整个header
         if (noConstrainsOnStatusLabel) self.stateLabel.frame = self.bounds;
     } else {
         CGFloat stateLabelH = self.mj_h * 0.5;
         // 状态
         if (noConstrainsOnStatusLabel) {
+            // (0,0,mj_w,stateLabelH),高度为header 的一半
             self.stateLabel.mj_x = 0;
             self.stateLabel.mj_y = 0;
             self.stateLabel.mj_w = self.mj_w;
@@ -146,6 +150,7 @@
         
         // 更新时间
         if (self.lastUpdatedTimeLabel.constraints.count == 0) {
+            // 时间在下半部分
             self.lastUpdatedTimeLabel.mj_x = 0;
             self.lastUpdatedTimeLabel.mj_y = stateLabelH;
             self.lastUpdatedTimeLabel.mj_w = self.mj_w;

@@ -15,12 +15,15 @@
 
 @implementation MJRefreshHeader
 #pragma mark - 构造方法
+// 创建header
 + (instancetype)headerWithRefreshingBlock:(MJRefreshComponentRefreshingBlock)refreshingBlock
 {
     MJRefreshHeader *cmp = [[self alloc] init];
     cmp.refreshingBlock = refreshingBlock;
     return cmp;
 }
+
+// 创建header
 + (instancetype)headerWithRefreshingTarget:(id)target refreshingAction:(SEL)action
 {
     MJRefreshHeader *cmp = [[self alloc] init];
@@ -36,7 +39,7 @@
     // 设置key
     self.lastUpdatedTimeKey = MJRefreshHeaderLastUpdatedTimeKey;
     
-    // 设置高度
+    // 设置高度，设置header的高度
     self.mj_h = MJRefreshHeaderHeight;
 }
 
@@ -45,9 +48,11 @@
     [super placeSubviews];
     
     // 设置y值(当自己的高度发生改变了，肯定要重新调整Y值，所以放到placeSubviews方法中设置y值)
+    // 设置y值，例如，-54
     self.mj_y = - self.mj_h - self.ignoredScrollViewContentInsetTop;
 }
 
+// scrollView的 ContentOffset 发生变化
 - (void)scrollViewContentOffsetDidChange:(NSDictionary *)change
 {
     [super scrollViewContentOffsetDidChange:change];
@@ -98,6 +103,7 @@
     }
 }
 
+// 设置header的状态
 - (void)setState:(MJRefreshState)state
 {
     MJRefreshCheckState
@@ -139,6 +145,7 @@
 }
 
 #pragma mark - 公共方法
+// 结束刷新
 - (void)endRefreshing
 {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -148,6 +155,7 @@
 
 - (NSDate *)lastUpdatedTime
 {
+    // 存储指定key 的时间
     return [[NSUserDefaults standardUserDefaults] objectForKey:self.lastUpdatedTimeKey];
 }
 @end
