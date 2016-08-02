@@ -21,6 +21,7 @@
     cmp.refreshingBlock = refreshingBlock;
     return cmp;
 }
+
 + (instancetype)footerWithRefreshingTarget:(id)target refreshingAction:(SEL)action
 {
     MJRefreshFooter *cmp = [[self alloc] init];
@@ -46,6 +47,7 @@
     
     if (newSuperview) {
         // 监听scrollView数据的变化
+        // 内部重现实现了，reloadData方法，监听有没有数据，没有数据就隐藏
         if ([self.scrollView isKindOfClass:[UITableView class]] || [self.scrollView isKindOfClass:[UICollectionView class]]) {
             [self.scrollView setMj_reloadDataBlock:^(NSInteger totalDataCount) {
                 if (self.isAutomaticallyHidden) {
@@ -57,16 +59,19 @@
 }
 
 #pragma mark - 公共方法
+// 结束刷新，没有数据可
 - (void)endRefreshingWithNoMoreData
 {
     self.state = MJRefreshStateNoMoreData;
 }
 
+// 通知没有更多数据了
 - (void)noticeNoMoreData
 {
     [self endRefreshingWithNoMoreData];
 }
 
+// 重置footer的状态
 - (void)resetNoMoreData
 {
     self.state = MJRefreshStateIdle;

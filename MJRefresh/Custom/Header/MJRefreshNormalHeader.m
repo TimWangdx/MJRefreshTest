@@ -103,11 +103,15 @@
 
 - (void)setState:(MJRefreshState)state
 {
+    // 检查旧的状态与要设置的状态，一样的话，直接返回，然后先调用父类的方法
     MJRefreshCheckState
     
     // 根据状态做事情
     if (state == MJRefreshStateIdle) {
+        // 从刷新中变为普通状态
         if (oldState == MJRefreshStateRefreshing) {
+            
+            // 刷新中变为普通状态，例如调用endRefreshing,结束刷新状态,箭头变为向下的状态
             self.arrowView.transform = CGAffineTransformIdentity;
             
             [UIView animateWithDuration:MJRefreshSlowAnimationDuration animations:^{
@@ -116,11 +120,13 @@
                 // 如果执行完动画发现不是idle状态，就直接返回，进入其他状态
                 if (self.state != MJRefreshStateIdle) return;
                 
+                // 设置为普通状态
                 self.loadingView.alpha = 1.0;
                 [self.loadingView stopAnimating];
                 self.arrowView.hidden = NO;
             }];
         } else {
+            // 从其他状态变为普通状态，也是设置为普通状态，结束刷新
             [self.loadingView stopAnimating];
             self.arrowView.hidden = NO;
             [UIView animateWithDuration:MJRefreshFastAnimationDuration animations:^{
@@ -128,12 +134,15 @@
             }];
         }
     } else if (state == MJRefreshStatePulling) {
+        // 变为松手可以刷新的状态
         [self.loadingView stopAnimating];
         self.arrowView.hidden = NO;
+        // 箭头向上
         [UIView animateWithDuration:MJRefreshFastAnimationDuration animations:^{
             self.arrowView.transform = CGAffineTransformMakeRotation(0.000001 - M_PI);
         }];
     } else if (state == MJRefreshStateRefreshing) {
+        // 进入刷新状态
         self.loadingView.alpha = 1.0; // 防止refreshing -> idle的动画完毕动作没有被执行
         [self.loadingView startAnimating];
         self.arrowView.hidden = YES;

@@ -39,6 +39,7 @@
     self.backgroundColor = [UIColor clearColor];
 }
 
+// 布局子控件，这个类没有subview
 - (void)layoutSubviews
 {
     [self placeSubviews];
@@ -46,6 +47,7 @@
     [super layoutSubviews];
 }
 
+// 这个基类没有sub view
 - (void)placeSubviews{}
 
 
@@ -253,6 +255,7 @@
 #pragma mark - 内部方法
 - (void)executeRefreshingCallback
 {
+    // 执行刷新
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.refreshingBlock) {
             self.refreshingBlock();

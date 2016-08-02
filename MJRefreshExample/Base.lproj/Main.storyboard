@@ -135,6 +135,11 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="MJRefresh演示" id="rSH-gE-746">
                         <barButtonItem key="backBarButtonItem" title="返回" id="vKU-iZ-uZG"/>
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="2G8-wV-tcF">
+                            <connections>
+                                <action selector="btnClicked:" destination="3cf-VR-wv0" id="Kwm-6U-znq"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Klq-V7-0ly" userLabel="First Responder" sceneMemberID="firstResponder"/>

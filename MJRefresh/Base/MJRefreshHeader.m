@@ -52,12 +52,13 @@
     self.mj_y = - self.mj_h - self.ignoredScrollViewContentInsetTop;
 }
 
-// scrollView的 ContentOffset 发生变化
+// scrollView的 ContentOffset 发生变化，监听scrollview的核心代码
 - (void)scrollViewContentOffsetDidChange:(NSDictionary *)change
 {
+    // 调用super 的scrollViewContentOffsetDidChange
     [super scrollViewContentOffsetDidChange:change];
     
-    // 在刷新的refreshing状态
+    // 在刷新的refreshing状态，这段代码暂时不理解作用，先跳过吧
     if (self.state == MJRefreshStateRefreshing) {
         if (self.window == nil) return;
         
@@ -75,28 +76,45 @@
     
     // 当前的contentOffset
     CGFloat offsetY = self.scrollView.mj_offsetY;
-    // 头部控件刚好出现的offsetY
+    // 头部控件刚好出现的offsetY,就是往下拉的时候，下边刚好出现的offset。例如self.scrollViewOriginalInset.top为0，
+    //  则scrolleview 的偏移为0，self.scrollViewOriginalInset.top为64，则offset为-64，就是头部控件平时状态，隐藏状态的offset，初始状态，不刷新的状态
     CGFloat happenOffsetY = - self.scrollViewOriginalInset.top;
     
     // 如果是向上滚动到看不见头部控件，直接返回
     // >= -> >
+    // offset 为10,happenOffsetY 为0，则是向上滚动
     if (offsetY > happenOffsetY) return;
     
     // 普通 和 即将刷新 的临界点
+    // header刚好整个显示在界面上，这个时候offset，假如happenOffsetY为0，则刚好全部显示的offset为 0-54，happenOffsetY为-64，则offset 为 - 64 - 54
     CGFloat normal2pullingOffsetY = happenOffsetY - self.mj_h;
+    
+    // 计算header被拉出的百分比，假如happenOffsetY为0，则偏移量就是offset,
+    // pullingPercent 会超过1
     CGFloat pullingPercent = (happenOffsetY - offsetY) / self.mj_h;
     
+//    NSLog(@"pullingPercent = %f",pullingPercent);
+    
     if (self.scrollView.isDragging) { // 如果正在拖拽
+        // 用户的手还没释放，还在拖拽中
+        // 拉出的百分比
         self.pullingPercent = pullingPercent;
+        
         if (self.state == MJRefreshStateIdle && offsetY < normal2pullingOffsetY) {
             // 转为即将刷新状态
+            // 从头部完全没显示出来，并且是MJRefreshStateIdle的状态，整个header已经全部被拉出来，normal2pullingOffsetY = -54，offsetY < -54
             self.state = MJRefreshStatePulling;
+            NSLog(@"变为松手即可刷新的状态 offsetY = %f",offsetY);
+            NSLog(@"变为松手即可刷新的状态 normal2pullingOffsetY = %f",normal2pullingOffsetY);
+            
         } else if (self.state == MJRefreshStatePulling && offsetY >= normal2pullingOffsetY) {
             // 转为普通状态
+            // 在拖拽的时候，有MJRefreshStatePulling变为MJRefreshStateIdle
             self.state = MJRefreshStateIdle;
         }
     } else if (self.state == MJRefreshStatePulling) {// 即将刷新 && 手松开
         // 开始刷新
+        // 整个header已经全部被拉出来，松手即可刷新的状态
         [self beginRefreshing];
     } else if (pullingPercent < 1) {
         self.pullingPercent = pullingPercent;
@@ -109,6 +127,7 @@
     MJRefreshCheckState
     
     // 根据状态做事情
+    // 由刷新中变为普通状态，即调用了，endRefreshing
     if (state == MJRefreshStateIdle) {
         if (oldState != MJRefreshStateRefreshing) return;
         
@@ -116,7 +135,7 @@
         [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:self.lastUpdatedTimeKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
-        // 恢复inset和offset
+        // 恢复inset和offset，由刷新中变为普通状态，即调用了，endRefreshing
         [UIView animateWithDuration:MJRefreshSlowAnimationDuration animations:^{
             self.scrollView.mj_insetT += self.insetTDelta;
             
@@ -125,17 +144,22 @@
         } completion:^(BOOL finished) {
             self.pullingPercent = 0.0;
             
+            // 结束刷新的通知
             if (self.endRefreshingCompletionBlock) {
                 self.endRefreshingCompletionBlock();
             }
         }];
     } else if (state == MJRefreshStateRefreshing) {
+        // 进入刷新状态
          dispatch_async(dispatch_get_main_queue(), ^{
             [UIView animateWithDuration:MJRefreshFastAnimationDuration animations:^{
+                // scrollViewOriginalInset.top 为0，mj_h 为54，则top = 54；
                 CGFloat top = self.scrollViewOriginalInset.top + self.mj_h;
                 // 增加滚动区域top
+                // 设置inset，让header不回弹
                 self.scrollView.mj_insetT = top;
                 // 设置滚动位置
+                // 回弹到-54的位置，header刚好整个显示出来的位置
                 [self.scrollView setContentOffset:CGPointMake(0, -top) animated:NO];
             } completion:^(BOOL finished) {
                 [self executeRefreshingCallback];

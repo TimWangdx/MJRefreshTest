@@ -21,6 +21,7 @@
 
 @implementation MJRefreshStateHeader
 #pragma mark - 懒加载
+// 每个状态对应的文字
 - (NSMutableDictionary *)stateTitles
 {
     if (!_stateTitles) {
@@ -48,6 +49,7 @@
 }
 
 #pragma mark - 公共方法
+// 设置不同状态下的文字
 - (void)setTitle:(NSString *)title forState:(MJRefreshState)state
 {
     if (title == nil) return;
@@ -68,17 +70,19 @@
 {
     [super setLastUpdatedTimeKey:lastUpdatedTimeKey];
     
-    // 如果label隐藏了，就不用再处理
+    // 如果label隐藏了，就不用再处理，自定义是否隐藏了时间，隐藏了，就不需要再处理了啊
     if (self.lastUpdatedTimeLabel.hidden) return;
     
+    // 根据key，取出上次存储的时间
     NSDate *lastUpdatedTime = [[NSUserDefaults standardUserDefaults] objectForKey:lastUpdatedTimeKey];
     
-    // 如果有block
+    // 如果有block，则执行block，获取时间显示的格式
     if (self.lastUpdatedTimeText) {
         self.lastUpdatedTimeLabel.text = self.lastUpdatedTimeText(lastUpdatedTime);
         return;
     }
     
+    // 就按默认的处理方法处理
     if (lastUpdatedTime) {
         // 1.获得年月日
         NSCalendar *calendar = [self currentCalendar];
@@ -163,7 +167,9 @@
 {
     MJRefreshCheckState
     
-    // 设置状态文字
+    // 这个类主要根据状态负责更新状态文字和时间
+    
+    // 设置状态文字，
     self.stateLabel.text = self.stateTitles[@(state)];
     
     // 重新设置key（重新显示时间）

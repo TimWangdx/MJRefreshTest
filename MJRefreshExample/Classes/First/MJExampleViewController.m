@@ -124,5 +124,13 @@ static NSString *const MJExample30 = @"UIWebView";
     [vc setValue:exam.methods[indexPath.row] forKeyPath:@"method"];
     [self.navigationController pushViewController:vc animated:YES];
 }
+- (IBAction)btnClicked:(UIBarButtonItem *)sender {
+    __unsafe_unretained UITableView *tableView = self.tableView;
+    
+    NSLog(@"tableView.contentOffset = %@",NSStringFromCGPoint(tableView.contentOffset));
+    
+    NSLog(@"tableView.contentInset = %@",NSStringFromUIEdgeInsets(tableView.contentInset));
+    NSLog(@"tableView.bounds = %@",NSStringFromCGRect(tableView.bounds));
+}
 
 @end
